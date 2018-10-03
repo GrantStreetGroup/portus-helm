@@ -6,7 +6,8 @@ Docker Registry.
 ## TL;DR;
 
 ```console
-$ helm install incubator/portus
+$ git clone https://github.com/GrantStreetGroup/portus-helm
+$ helm install protus-helm
 ```
 
 ## Introduction
