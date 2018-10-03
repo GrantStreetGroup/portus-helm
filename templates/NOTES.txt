@@ -1,0 +1,59 @@
+1. Get the Portus URL:
+
+  It may take a few moments for the Nginx proxy to find the Portus and Docker registry services, so you may get a 502 before connections are established.
+
+  {{- if .Values.ingress.enabled }}
+  You can access Portus, and the private Docker registry through:
+    {{- if .Values.ingress.tls.enabled }}
+    https://{{- .Values.host }}
+    {{- else }}
+    http://{{- .Values.host }}
+    {{- end }}
+  {{- else }}
+  Portus is not accessible from outside of the cluster, with the current settings. Use an IngressController, LoadBalancer or NodePort to access Portus.
+  {{- end }}
+
+2. Create admin user account:
+
+  You will be prompted to create an account before you can use Portus.
+
+  {{- if .Values.portus.tls.enabled }}
+  Fill in whatever credentials you would like.
+  {{- else }}
+  In order to use the Docker registry without TLS you will need to setup the user with a specific name
+
+  Username:
+    Silly
+
+  You can set the email and password to whatever you would like.
+  {{- end }}
+
+3. Associate Portus with the private Docker registry:
+
+  After creating an admin account you will need to associate Portus with the installed instance of the Docker registry.
+
+  You can give the registry whatever name you would like, but must fill out the rest of the credentials according to these instructions.
+
+  Hostname:
+    {{ template "registry.fullname" . }}:{{ .Values.registry.service.port }}
+
+  {{- if .Values.portus.tls.enabled }}
+
+  Check "Use SSL"
+  {{- end }}
+
+  {{- if .Values.ingress.host }}
+
+  Click the button "Show Advanced"
+
+  External Registry Name:
+    {{- if .Values.ingress.enabled }}
+
+    {{- if .Values.ingress.tls.enabled }}
+    https://{{ .Values.ingress.host }}:{{ .Values.ingress.port }}
+    {{- else }}
+    http://{{ .Values.ingress.host }}:{{ .Values.ingress.port }}
+    {{- end }}
+
+    {{- end }}
+  {{- end }}

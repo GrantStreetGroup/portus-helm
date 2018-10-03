@@ -1,0 +1,13 @@
+dependencies:
+  - name: mariadb 
+    version: 4.2.2
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: mariadb.enabled
+  - name: redis
+    version: 3.3.6
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: redis.enabled
+  - name: postgresql
+    version: 0.9.1
+    repository: https://kubernetes-charts.storage.googleapis.com
+    condition: clair.enabled

@@ -1,0 +1,45 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "nginx.fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- if .Values.portus.tls.enabled }}
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ template "portus.fullname" . }}
+              servicePort: {{ .Values.portus.service.port }} 
+          - path: /v2/token
+            backend:
+              serviceName: {{ template "portus.fullname" . }}
+              servicePort: {{ .Values.portus.service.port }}
+          - path: /v2/webhooks/events
+            backend:
+              serviceName: {{ template "portus.fullname" . }}
+              servicePort: {{ .Values.portus.service.port }}
+          - path: /v2
+            backend:
+              serviceName: {{ template "registry.fullname" . }}
+              servicePort: {{ .Values.registry.service.port }}         
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - secretName: {{ .Values.ingress.tls.secretName | quote }}
+      hosts:
+        - {{ .Values.ingress.host | quote }}
+  {{- end }}
+{{- end }}
